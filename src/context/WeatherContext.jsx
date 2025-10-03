@@ -6,7 +6,7 @@ const WeatherContext = createContext(null)
 export const useWeather = () => {
   const context = useContext(WeatherContext)
   if (!context){
-    return new Error("useWeather must used within a WeatherProvider")
+    throw new Error("useWeather must used within a WeatherProvider")
   }
   return context
 }
