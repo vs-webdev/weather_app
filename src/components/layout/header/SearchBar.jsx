@@ -1,31 +1,27 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import searchIcon from "../../../assets/images/icon-search.svg"
-
-const mockSearchData = ["England, United Kingdom", "Ontario, Canada", "Ohio, United States", "Kentucky, United States", "Arkansas, United States"]
+import { useWeather } from "../../../context/WeatherContext"
+import { useWeatherService } from "../../../hooks/useWeatherService"
+import { useClickOutside } from "../../../hooks/useClickOutside"
 
 const SearchBar = () => {
-  const [searchText, setSearchText] = useState('')
-  const [showOptions, setShowOptions] = useState(false)
   const searchBarRef = useRef(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showOptions, setShowOptions] = useState(false)
+  const [searchResults, setSearchResults] = useState([])
+  const { fetchGeoLocation, fetchWeatherData } = useWeatherService()
+  const {setSelectedGeoLoc, selectedGeoLoc, setWeatherData} = useWeather()
+  useClickOutside(searchBarRef, () => setShowOptions(false))
 
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (searchBarRef.current && !searchBarRef.current.contains(e.target)){
-        setShowOptions(false)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
-
-  const handleSearch = (e) => {
+  const handleOnChange = (e) => {
+    const value = e.target.value
+    setSearchQuery(value)
+  }
+  
+  const handleSearch = async (e) => {
     e.preventDefault()
     setShowOptions(false)
-    setSearchText('')
+    setSearchQuery('')
   }
 
   return (
@@ -38,13 +34,9 @@ const SearchBar = () => {
             id="search"
             placeholder="Search for a place..."
             className="h-full w-full outline-none text-lg"
-            value={searchText}
-            onChange={e => {
-                const value = e.target.value
-                setSearchText(value)
-                setShowOptions(value.length > 0)
-              }
-            }
+            value={searchQuery}
+            autoComplete="off"
+            onChange={handleOnChange}
           />
         </div>
         <button type="submit" className="border px-7 py-1 rounded-[10px] text-lg font-medium hover:bg-gray-500/20 cursor-pointer">Search</button>
@@ -52,12 +44,16 @@ const SearchBar = () => {
       {showOptions && (<div>
         <ul className="absolute border w-full rounded-[10px] mt-2 bg-neutral-800 overflow-hidden">
           {
-            mockSearchData.map(cityLocation => (
-              <li className="px-4 py-2 border-b-[1px] border-neutral-700 hover:bg-neutral-600 cursor-pointer"
-                onClick={() => setSearchText(`London, ${cityLocation}`)}
+            searchResults.map((cityLocation) => (
+              <li key={cityLocation.id} className="px-4 py-2 border-b-[1px] border-neutral-700 hover:bg-neutral-600 cursor-pointer"
+                onClick={() => {
+                  setSearchText(`${cityLocation.name}, ${cityLocation.admin1}, ${cityLocation.country}`)
+                  setShowOptions(false)
+                  setSelectedGeoLoc({latitude: cityLocation.latitude, longitude: cityLocation.longitude, name: `${cityLocation.name}, ${cityLocation.country}`})
+                }} 
               >
-                <h3 className="text-lg">London</h3>
-                <span className="text-sm">{cityLocation}</span>
+                <h3 className="text-lg">{cityLocation.name}</h3>
+                <span className="text-sm">{cityLocation.admin1}, {cityLocation.country}</span>
               </li>
             ))
           }
