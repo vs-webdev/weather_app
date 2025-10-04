@@ -16,6 +16,25 @@ const SearchBar = () => {
   const handleOnChange = (e) => {
     const value = e.target.value
     setSearchQuery(value)
+
+    // Clear Debounce
+    if (debounceRef.current){
+      clearTimeout(debounceRef.current)
+    }
+
+    // Debounce
+    debounceRef.current = setTimeout(async () => {
+      if (value.length > 1){
+        const searches = await fetchGeoLocation(value)
+        if (searches.length > 0){
+          setSearchResults(searches)
+          setShowOptions(true)
+        }
+      } else {
+        setSearchResults([])
+        setShowOptions(false)
+      }
+    }, 300);
   }
   
   const handleSearch = async (e) => {
