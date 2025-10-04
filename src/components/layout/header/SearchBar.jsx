@@ -6,6 +6,7 @@ import { useClickOutside } from "../../../hooks/useClickOutside"
 
 const SearchBar = () => {
   const searchBarRef = useRef(null)
+  const debounceRef = useRef(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [showOptions, setShowOptions] = useState(false)
   const [searchResults, setSearchResults] = useState([])
@@ -17,12 +18,11 @@ const SearchBar = () => {
     const value = e.target.value
     setSearchQuery(value)
 
-    // Clear Debounce
+    // Debounce
     if (debounceRef.current){
       clearTimeout(debounceRef.current)
     }
 
-    // Debounce
     debounceRef.current = setTimeout(async () => {
       if (value.length > 1){
         const searches = await fetchGeoLocation(value)
@@ -39,8 +39,15 @@ const SearchBar = () => {
   
   const handleSearch = async (e) => {
     e.preventDefault()
-    setShowOptions(false)
-    setSearchQuery('')
+    try {
+      const data = await fetchWeatherData(selectedGeoLoc.latitude, selectedGeoLoc.longitude)
+      setWeatherData(data)
+    } catch (error) {
+      console.log("Search error:", error.message)
+    } finally {
+      setShowOptions(false)
+      setSearchQuery('')
+    }
   }
 
   return (
