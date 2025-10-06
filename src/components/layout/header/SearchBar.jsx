@@ -11,7 +11,7 @@ const SearchBar = () => {
   const [showOptions, setShowOptions] = useState(false)
   const [searchResults, setSearchResults] = useState([])
   const { fetchGeoLocation, fetchWeatherData } = useWeatherService()
-  const {setSelectedGeoLoc, selectedGeoLoc, setWeatherData} = useWeather()
+  const {setSelectedLocation, selectedLocation, setWeatherData} = useWeather()
   useClickOutside(searchBarRef, () => setShowOptions(false))
 
   const handleOnChange = (e) => {
@@ -40,7 +40,7 @@ const SearchBar = () => {
   const handleSearch = async (e) => {
     e.preventDefault()
     try {
-      const data = await fetchWeatherData(selectedGeoLoc.latitude, selectedGeoLoc.longitude)
+      const data = await fetchWeatherData(selectedLocation.latitude, selectedLocation.longitude)
       setWeatherData(data)
     } catch (error) {
       console.log("Search error:", error.message)
@@ -73,9 +73,9 @@ const SearchBar = () => {
             searchResults.map((cityLocation) => (
               <li key={cityLocation.id} className="px-4 py-2 border-b-[1px] border-neutral-700 hover:bg-neutral-600 cursor-pointer"
                 onClick={() => {
-                  setSearchText(`${cityLocation.name}, ${cityLocation.admin1}, ${cityLocation.country}`)
+                  setSearchQuery(`${cityLocation.name}, ${cityLocation.admin1}, ${cityLocation.country}`)
                   setShowOptions(false)
-                  setSelectedGeoLoc({latitude: cityLocation.latitude, longitude: cityLocation.longitude, name: `${cityLocation.name}, ${cityLocation.country}`})
+                  setSelectedLocation({latitude: cityLocation.latitude, longitude: cityLocation.longitude, name: `${cityLocation.name}, ${cityLocation.country}`})
                 }} 
               >
                 <h3 className="text-lg">{cityLocation.name}</h3>
