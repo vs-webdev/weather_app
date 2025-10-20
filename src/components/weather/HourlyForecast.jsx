@@ -12,9 +12,9 @@ const HourlyForecast = () => {
   const hourlyForecastData = time?.slice(0, 24).filter((_, i) => i % 3 === 0).map((t, i) => {
     const formattedTime = new Date(t).toLocaleTimeString("en-US", {hour: "numeric", minute: "2-digit"})
     return {
-      time: formattedTime ,
-      temperature: temperature_2m[i],
-      weatherCode: weather_code[i]
+      time: formattedTime,
+      temperature: temperature_2m[i * 3],
+      weatherCode: weather_code[i * 3]
     }
   })
 
