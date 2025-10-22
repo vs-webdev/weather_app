@@ -1,24 +1,10 @@
 import { useMemo } from "react"
-import drizzle from "../../assets/images/icon-drizzle.webp"
-import fog from "../../assets/images/icon-fog.webp"
-import overcast from "../../assets/images/icon-overcast.webp"
-import partlyCloudy from "../../assets/images/icon-partly-cloudy.webp"
-import rain from "../../assets/images/icon-rain.webp"
-import snow from "../../assets/images/icon-snow.webp"
-import storm from "../../assets/images/icon-storm.webp"
 import { useWeather } from "../../context/WeatherContext"
+import WEATHER_CODES from "../../constants/weatherCodes"
+
+// changes in the styling 
 
 const DailyForecast = () => {
-  
-  const mockData = [
-    {forecast: 'drizzle', icon: drizzle},
-    {forecast: 'fog', icon: fog},
-    {forecast: 'overcast', icon: overcast},
-    {forecast: 'partlyCloudy', icon: partlyCloudy},
-    {forecast: 'rain', icon: rain},
-    {forecast: 'snow', icon: snow},
-    {forecast: 'storm', icon: storm},
-  ]
 
   const {weatherData} = useWeather()
 
@@ -30,38 +16,38 @@ const DailyForecast = () => {
         .toLocaleString("en-US", {weekday: "long", day: "numeric", month: "short"})
         .split(',')
         .map(str => str.trim())
-  
+        
       return {
         weekday,
         date,
         weatherCode: weather_code[i],
         max: temperature_2m_max[i],
         min: temperature_2m_min[i],
-        forecast: mockData[i].forecast || "unknown",
-        icon: mockData[i].icon
       }
     }) || []
   ), [time])
 
   return (
     <div className="mt-12">
-      <div className="mb-10">
+      <div className="mb-8">
         <hr />
       </div>
-      <div>
-        <ul className="flex justify-between px-8">
+      <div className="px-4">
+        <ul className="flex justify-between gap-4">
           {dailyForecastData?.map((data, index) => (
-            <li key={index}>
-              <h3 className="text-lg font-semibold uppercase">{data.weekday}</h3>
+            <li key={index} className="w-full flex justify-center py-3 bg-gray-600/10 cursor-default">
+              <div>
+                <h3 className="text-lg font-semibold uppercase">{data.weekday}</h3>
                 <span className="text-sm">{data.date}</span>
-                <div className="flex flex-col text-sm mt-2">
+                <div className="flex flex-col text-sm text-neutral-400 mt-2">
                   <span>min: {data.min}&deg;</span>
                   <span>max: {data.max}&deg;</span>
                 </div>
-                <img src={data.icon} alt="Icon" className="w-16" />
+                <img src={WEATHER_CODES[data.weatherCode].icon} alt="Icon" className="w-16" />
                 <div className="mt-">
-                  <span className="text-sm">{data.forecast}</span>
+                  <span className="text-sm">{WEATHER_CODES[data.weatherCode].description}</span>
                 </div>
+              </div>
             </li>
           ))}
         </ul>

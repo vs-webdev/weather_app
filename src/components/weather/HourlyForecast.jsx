@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
-import weatherIcon from "../../assets/images/icon-drizzle.webp"
 import { useWeather } from "../../context/WeatherContext"
+import WEATHER_CODES from "../../constants/weatherCodes"
 
 const HourlyForecast = () => {
   const {weatherData} = useWeather()
@@ -50,7 +50,7 @@ const HourlyForecast = () => {
         {hourlyForecastData.map((data, index) => (
         <li key={index} className="flex flex-col items-center">
           <div>
-            <img src={weatherIcon} alt="Weather Icon" className="w-15" />
+            <img src={WEATHER_CODES[data.weatherCode].icon} alt="Weather Icon" className="w-15" />
             <span className="text-2xl">{data.temperature}&deg;</span>
             <p className="text-sm mt-2">{data.time}</p>
           </div>
