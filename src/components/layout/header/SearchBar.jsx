@@ -73,13 +73,14 @@ const SearchBar = () => {
             searchResults.map((cityLocation) => (
               <li key={cityLocation.id} className="px-4 py-2 border-b-[1px] border-neutral-700 hover:bg-neutral-600 cursor-pointer"
                 onClick={() => {
-                  setSearchQuery(`${cityLocation.name}, ${cityLocation.admin1}, ${cityLocation.country}`)
+                  const city = [cityLocation.name, cityLocation.admin1, cityLocation.country].filter(Boolean).join(', ')
+                  setSearchQuery(city)
                   setShowOptions(false)
-                  setSelectedLocation({latitude: cityLocation.latitude, longitude: cityLocation.longitude, name: `${cityLocation.name}, ${cityLocation.country}`})
+                  setSelectedLocation({latitude: cityLocation.latitude, longitude: cityLocation.longitude, name: city})
                 }} 
               >
-                <h3 className="text-lg">{cityLocation.name}</h3>
-                <span className="text-sm">{cityLocation.admin1}, {cityLocation.country}</span>
+                <h3 className="text-lg">{cityLocation?.name}</h3>
+                <span className="text-sm">{cityLocation?.admin1 ? `${cityLocation?.admin1},` : ""} {cityLocation?.country}</span>
               </li>
             ))
           }
