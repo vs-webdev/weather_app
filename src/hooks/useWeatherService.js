@@ -1,32 +1,28 @@
 import { useState } from "react"
-import { getWeather, searchLocation } from "../services/weatherAPI"
+import { fetchLocation, fetchWeather } from "../services/weatherAPI"
 
 export const useWeatherService = () => {
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  const fetchGeoLocation = async (name) => {
+  const getGeoLocation = async (name) => {
     try {
-      const locations = await searchLocation(name)
+      const locations = await fetchLocation(name)
       return locations
     } catch (error) {
       console.log(error.message)
     }
   }
 
-  const fetchWeatherData = async (latitude, longitude) => {
+  const getWeatherData = async (latitude, longitude) => {
     try {
-      setLoading(true)
       setError(null)
-      const weatherData = await getWeather(latitude, longitude)
+      const weatherData = await fetchWeather(latitude, longitude)
       return weatherData
     } catch (error) {
       console.error("fetch weather error:", error)
       setError(error.message)
-    } finally {
-      setLoading(false)
     }
   }
 
-  return { loading, error, fetchGeoLocation, fetchWeatherData }
+  return { error, getGeoLocation, getWeatherData }
 }

@@ -10,7 +10,7 @@ const SearchBar = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [showOptions, setShowOptions] = useState(false)
   const [searchResults, setSearchResults] = useState([])
-  const { fetchGeoLocation, fetchWeatherData } = useWeatherService()
+  const { getGeoLocation, getWeatherData } = useWeatherService()
   const {setSelectedLocation, selectedLocation, setWeatherData} = useWeather()
   useClickOutside(searchBarRef, () => setShowOptions(false))
 
@@ -25,7 +25,7 @@ const SearchBar = () => {
 
     debounceRef.current = setTimeout(async () => {
       if (value.length > 1){
-        const searches = await fetchGeoLocation(value)
+        const searches = await getGeoLocation(value)
         if (searches.length > 0){
           setSearchResults(searches)
           setShowOptions(true)
@@ -40,7 +40,7 @@ const SearchBar = () => {
   const handleSearch = async (e) => {
     e.preventDefault()
     try {
-      const data = await fetchWeatherData(selectedLocation.latitude, selectedLocation.longitude)
+      const data = await getWeatherData(selectedLocation.latitude, selectedLocation.longitude)
       setWeatherData(data)
     } catch (error) {
       console.log("Search error:", error.message)

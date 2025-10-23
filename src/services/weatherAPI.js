@@ -1,6 +1,6 @@
 import axios from "axios"
 
-export const searchLocation = async (name) => {
+export const fetchLocation = async (name) => {
   const res = await axios.get(`https://geocoding-api.open-meteo.com/v1/search?name=${name}`)
   console.log(res.data)
   const locations = res.data.results.map(element => {
@@ -17,15 +17,15 @@ export const searchLocation = async (name) => {
   return locations
 }
 
-export const getWeather = async (latitude, longitude) => {
+export const fetchWeather = async (latitude, longitude) => {
   try {
     const res = await axios.get("https://api.open-meteo.com/v1/forecast", {
       params: {
         latitude,
         longitude,
-        hourly: "temperature_2m,relativehumidity_2m,windspeed_10m,apparent_temperature,surface_pressure,weather_code",
-        daily: "temperature_2m_max,temperature_2m_min",
-        current_weather: true,
+        hourly: "temperature_2m,relative_humidity_2m,windspeed_10m,apparent_temperature,surface_pressure,weather_code",
+        daily: "temperature_2m_max,temperature_2m_min,sunrise,sunset,weather_code",
+        current: "temperature,windspeed,relative_humidity_2m,apparent_temperature,weather_code,surface_pressure,precipitation_probability",
         timezone: "auto",
       }
     })
