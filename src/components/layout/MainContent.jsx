@@ -1,17 +1,27 @@
-import DailyForecast from "./DailyForecast"
-import HourlyForecast from "./HourlyForecast"
-import WeatherInfo from "./WeatherInfo"
+import { useWeather } from "../../context/WeatherContext"
+import DailyForecast from "../weather/DailyForecast"
+import HourlyForecast from "../weather/HourlyForecast"
+import WeatherInfo from "../weather/WeatherInfo"
+import LoadingSkeleton from "./LoadingSkeleton"
 
 const MainContent = () => {
+  const {loading} = useWeather()
+
   return (
-    <div>
-      <div>
-        <WeatherInfo />
-        <HourlyForecast />
-      </div>
-      <div>
-        <DailyForecast />
-      </div>
+    <div className="px-4 mt-40">
+      {loading
+      ? <LoadingSkeleton />
+      : (
+        <>
+          <div className="flex justify-between">
+            <WeatherInfo />
+            <HourlyForecast />
+          </div>
+          <div>
+            <DailyForecast />
+          </div>
+        </>
+      )}
     </div>
   )
 }
