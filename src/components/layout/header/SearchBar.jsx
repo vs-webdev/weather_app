@@ -10,8 +10,8 @@ const SearchBar = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [showOptions, setShowOptions] = useState(false)
   const [searchResults, setSearchResults] = useState([])
-  const { getGeoLocation, getWeatherData } = useWeatherService()
-  const {setSelectedLocation, selectedLocation, setWeatherData} = useWeather()
+  const { getGeoLocation } = useWeatherService()
+  const {setSelectedLocation} = useWeather()
   useClickOutside(searchBarRef, () => setShowOptions(false))
 
   const handleOnChange = (e) => {
@@ -25,7 +25,8 @@ const SearchBar = () => {
 
     debounceRef.current = setTimeout(async () => {
       if (value.length > 1){
-        const searches = await getGeoLocation(value)
+        const searches = await getGeoLocation(value) || []
+
         if (searches.length > 0){
           setSearchResults(searches)
           setShowOptions(true)
@@ -34,20 +35,18 @@ const SearchBar = () => {
         setSearchResults([])
         setShowOptions(false)
       }
-    }, 300);
+    }, 500);
   }
   
   const handleSearch = async (e) => {
     e.preventDefault()
-    try {
-      const data = await getWeatherData(selectedLocation.latitude, selectedLocation.longitude)
-      setWeatherData(data)
-    } catch (error) {
-      console.log("Search error:", error.message)
-    } finally {
-      setShowOptions(false)
-      setSearchQuery('')
-    }
+    if (searchResults.length === 0) return;
+
+    const selectedCity = searchResults[0]
+    const city = [selectedCity.name, selectedCity.admin1, selectedCity.country].filter(Boolean).join(', ')
+    setSelectedLocation({latitude: selectedCity.latitude, longitude: selectedCity.longitude, name: city})
+    setShowOptions(false)
+    setSearchQuery('')
   }
 
   return (
