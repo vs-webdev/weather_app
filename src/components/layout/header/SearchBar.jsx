@@ -9,38 +9,48 @@ const SearchBar = () => {
   const debounceRef = useRef(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [showOptions, setShowOptions] = useState(false)
-  const [searchResults, setSearchResults] = useState([])
   const { getGeoLocation } = useWeatherService()
-  const {setSelectedLocation} = useWeather()
+  const {setSelectedLocation, searchResults, setSearchResults, setHasSearched} = useWeather()
   useClickOutside(searchBarRef, () => setShowOptions(false))
 
   const handleOnChange = (e) => {
     const value = e.target.value
     setSearchQuery(value)
-
+    setHasSearched(false)
+    
     // Debounce
     if (debounceRef.current){
       clearTimeout(debounceRef.current)
     }
-
+    
     debounceRef.current = setTimeout(async () => {
-      if (value.length > 1){
-        const searches = await getGeoLocation(value) || []
-
-        if (searches.length > 0){
-          setSearchResults(searches)
-          setShowOptions(true)
-        }
-      } else {
+      if (value.length < 2){
         setSearchResults([])
         setShowOptions(false)
+        return
       }
+
+      const searches = (await getGeoLocation(value) || [])
+      const hasResults = searches.length > 0
+
+      setSearchResults(hasResults ? searches : [])
+      setShowOptions(hasResults)
     }, 500);
   }
-  
+
   const handleSearch = async (e) => {
     e.preventDefault()
-    if (searchResults.length === 0) return;
+    // prevent empty query
+    if (!searchQuery.trim()) {
+      setHasSearched(false)
+      return
+    }
+
+    // mark search attempt
+    setHasSearched(true)
+
+    // handle no results
+    if (searchResults.length === 0) return
 
     const selectedCity = searchResults[0]
     const city = [selectedCity.name, selectedCity.admin1, selectedCity.country].filter(Boolean).join(', ')
